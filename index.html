@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>رأس أريج</title>
+
+    <!-- PWA / Standalone full‑screen support when added to Home Screen -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="رأس أريج">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D8%B1%D8%A3%D8%B3%20%D8%A3%D8%B1%D9%8A%D8%AC%22%2C%22short_name%22%3A%22%D8%B1%D8%A3%D8%B3%20%D8%A3%D8%B1%D9%8A%D8%AC%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23fff5f5%22%2C%22theme_color%22%3A%22%23ff7675%22%2C%22icons%22%3A%5B%5D%7D">
+
     <style>
         :root {
             --bg: #fff5f5;
@@ -35,6 +43,891 @@
         }
 
         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #fff5f5 50%, #fff9e6 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 560px;
+            margin: 0 auto;
+            padding: 10px 0 40px;
+        }
+
+        .app-header {
+            text-align: center;
+            padding: 24px 0 20px;
+            position: relative;
+        }
+        .app-header .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+        .app-header .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #ff7675, #fdcb6e);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 118, 117, 0.4);
+        }
+        .app-header .subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* Full‑screen button */
+        .fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition);
+            line-height: 1;
+            box-shadow: var(--shadow-sm);
+            z-index: 10;
+        }
+        .fullscreen-btn:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: var(--primary-light);
+            color: var(--primary);
+            white-space: nowrap;
+        }
+        .badge.success {
+            background: var(--success-light);
+            color: #00a8a5;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(255, 118, 117, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 14px rgba(255, 118, 117, 0.45);
+        }
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--border);
+        }
+        .btn-outline:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1.5px solid transparent;
+        }
+        .btn-danger:hover {
+            background: var(--danger-light);
+            border-color: var(--danger);
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+        .btn-xs {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .input-group input {
+            flex: 1;
+        }
+        .input {
+            padding: 11px 16px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            font-size: 0.9rem;
+            font-family: inherit;
+            background: var(--surface-alt);
+            color: var(--text);
+            transition: var(--transition);
+            width: 100%;
+            letter-spacing: -0.01em;
+        }
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 118, 117, 0.15);
+            background: #fff;
+        }
+        .input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1.5px solid transparent;
+            background: var(--surface-alt);
+            margin-bottom: 6px;
+            text-decoration: none;
+            color: inherit;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .list-item:hover {
+            background: #fff;
+            border-color: var(--border);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-1px);
+        }
+        .list-item:active {
+            transform: scale(0.985);
+        }
+        .list-item .list-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #ff7675, #fdcb6e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            color: white;
+        }
+        .list-item .list-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .list-item .list-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            letter-spacing: -0.01em;
+        }
+        .list-item .list-meta {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .list-item .arrow {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            transition: var(--transition);
+            border: 1.5px solid transparent;
+            background: var(--surface-alt);
+            margin-bottom: 5px;
+            animation: fadeSlideIn 0.3s ease;
+        }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .task-row:hover {
+            background: #fff;
+            border-color: var(--border);
+        }
+        .task-row.completed {
+            opacity: 0.65;
+            background: #fef9f9;
+        }
+
+        .checkbox-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid #ffe2e2;
+            flex-shrink: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            background: #fff;
+            font-size: 0.7rem;
+            color: transparent;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .checkbox-circle:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 118, 117, 0.1);
+        }
+        .checkbox-circle.checked {
+            background: var(--success);
+            border-color: var(--success);
+            color: #fff;
+        }
+
+        .task-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            min-width: 0;
+        }
+
+        .text-content {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            word-break: break-word;
+            font-size: 1.1rem;
+            font-weight: 600;
+            line-height: 1.5;
+            color: var(--text);
+            letter-spacing: -0.01em;
+            vertical-align: middle;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0 calc(0.75em - 1px),
+                currentColor calc(0.75em - 1px) calc(0.75em + 1px),
+                transparent calc(0.75em + 1px) 1.5em
+            );
+            background-size: 0% 100%;
+            background-repeat: no-repeat;
+        }
+
+        .task-row.completed .text-content {
+            background-size: 100% 100%;
+        }
+
+        .text-content.animate-strike {
+            transition: background-size 0.4s ease;
+            background-size: 100% 100%;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .task-actions .btn {
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+        .task-row:hover .task-actions .btn {
+            opacity: 1;
+        }
+
+        .back-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 8px 0;
+            transition: var(--transition);
+            -webkit-tap-highlight-color: transparent;
+            width: fit-content;
+        }
+        .back-row:hover {
+            color: var(--primary-hover);
+            gap: 12px;
+        }
+        .back-row .back-arrow {
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.7;
+        }
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(45, 52, 54, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-dialog {
+            background: #fff;
+            border-radius: var(--radius-lg);
+            padding: 28px 24px 20px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            animation: scaleIn 0.25s ease;
+            text-align: center;
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-dialog .modal-icon {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+        }
+        .modal-dialog h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: -0.01em;
+        }
+        .modal-dialog p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .modal-dialog .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .modal-dialog .btn {
+            min-width: 100px;
+            justify-content: center;
+        }
+
+        .delete-list-btn {
+            opacity: 0.5;
+            transition: var(--transition);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+        }
+        .list-item:hover .delete-list-btn {
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .app-container { padding: 0 0 30px; }
+            .card { padding: 16px 14px; border-radius: var(--radius); }
+            .list-item { padding: 12px; }
+            .task-row { padding: 10px 10px; gap: 8px; }
+            .btn { padding: 9px 14px; font-size: 0.85rem; }
+            .input { padding: 10px 12px; font-size: 0.85rem; }
+            .app-header .logo { font-size: 1.4rem; }
+            .app-header .logo-icon { width: 36px; height: 36px; font-size: 1.1rem; }
+            .fullscreen-btn { top: 10px; right: 5px; padding: 6px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" id="app"></div>
+    <div id="modal-container"></div>
+
+    <script>
+        (function() {
+            const STORAGE_KEY = 'taskmanager_lists';
+            const REQUIRED_LIST_NAME = 'مشتريات للغردقة';
+
+            // ── Full‑screen helper ──────────────────────
+            function toggleFullscreen() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    const el = document.documentElement;
+                    if (el.requestFullscreen) {
+                        el.requestFullscreen().catch(() => {});
+                    } else if (el.webkitRequestFullscreen) {
+                        el.webkitRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                }
+            }
+
+            // Try to go full‑screen on the first user tap anywhere (one‑time)
+            function enableAutoFullscreen() {
+                const handler = () => {
+                    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                        toggleFullscreen();
+                    }
+                    document.removeEventListener('click', handler);
+                    document.removeEventListener('touchstart', handler);
+                };
+                document.addEventListener('click', handler);
+                document.addEventListener('touchstart', handler);
+            }
+
+            // ── Data & App ────────────────────────────
+            function loadLists() {
+                let lists = [];
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) lists = parsed;
+                    }
+                } catch (e) {}
+
+                if (lists.length === 0) {
+                    lists = [
+                        { id: generateId(), name: 'Work Tasks', tasks: [
+                                { id: generateId(), text: 'Finish quarterly report', completed: false },
+                                { id: generateId(), text: 'Review pull requests', completed: true },
+                                { id: generateId(), text: 'Plan sprint backlog', completed: false },
+                            ] },
+                        { id: generateId(), name: 'Personal', tasks: [
+                                { id: generateId(), text: 'Buy groceries', completed: false },
+                                { id: generateId(), text: 'Schedule dentist appointment', completed: true },
+                            ] },
+                        { id: generateId(), name: 'Home Projects', tasks: [
+                                { id: generateId(), text: 'Paint the fence', completed: false },
+                            ] },
+                    ];
+                }
+
+                const existingIndex = lists.findIndex(l => l.name === REQUIRED_LIST_NAME);
+                if (existingIndex === -1) {
+                    lists.push({
+                        id: generateId(),
+                        name: REQUIRED_LIST_NAME,
+                        tasks: [
+                            { id: generateId(), text: 'كريم الشمس', completed: true },
+                            { id: generateId(), text: 'فستان البحر', completed: false },
+                            { id: generateId(), text: 'نعل البحر', completed: false },
+                            { id: generateId(), text: 'قبعة الشمس', completed: false },
+                            { id: generateId(), text: 'تذاكر الاتوبيس', completed: false },
+                        ]
+                    });
+                }
+
+                return lists;
+            }
+
+            function saveLists(lists) { localStorage.setItem(STORAGE_KEY, JSON.stringify(lists)); }
+            function generateId() { return 'id_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 8); }
+
+            let lists = loadLists();
+            let currentView = 'lists';
+            let currentListId = null;
+
+            let modalResolve = null;
+            function showModal(options) {
+                return new Promise((resolve) => {
+                    modalResolve = resolve;
+                    const container = document.getElementById('modal-container');
+                    const { icon = '⚠️', title = 'Are you sure?', message = 'This action cannot be undone.',
+                            confirmText = 'Confirm', cancelText = 'Cancel', confirmVariant = 'danger' } = options;
+                    const confirmStyle = confirmVariant === 'danger' ? 'background:#ff7675;color:#fff;box-shadow:0 2px 8px rgba(255,118,117,0.35);' :
+                                        confirmVariant === 'warning' ? 'background:#fdcb6e;color:#fff;box-shadow:0 2px 8px rgba(253,203,110,0.35);' : '';
+                    container.innerHTML = `
+                        <div class="modal-overlay" id="modal-overlay">
+                            <div class="modal-dialog">
+                                <div class="modal-icon">${icon}</div>
+                                <h3>${title}</h3>
+                                <p>${message}</p>
+                                <div class="modal-actions">
+                                    <button class="btn btn-outline" id="modal-cancel">${cancelText}</button>
+                                    <button class="btn" style="${confirmStyle}" id="modal-confirm">${confirmText}</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === this) closeModal(false); });
+                    document.getElementById('modal-cancel').addEventListener('click', () => closeModal(false));
+                    document.getElementById('modal-confirm').addEventListener('click', () => closeModal(true));
+                    function onKeydown(e) { if (e.key === 'Escape') { closeModal(false); document.removeEventListener('keydown', onKeydown); } }
+                    document.addEventListener('keydown', onKeydown);
+                    container._onKeydown = onKeydown;
+                });
+            }
+            function closeModal(result) {
+                const container = document.getElementById('modal-container');
+                if (container._onKeydown) document.removeEventListener('keydown', container._onKeydown);
+                container.innerHTML = '';
+                if (modalResolve) { modalResolve(result); modalResolve = null; }
+            }
+
+            const appEl = document.getElementById('app');
+
+            function render() {
+                if (currentView === 'lists') renderListsView();
+                else if (currentView === 'tasks') renderTasksView();
+            }
+
+            function renderListsView() {
+                let listsHtml = lists.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <p>No lists yet.<br>Create your first task list above!</p>
+                    </div>` : lists.map(list => {
+                        const completed = list.tasks.filter(t => t.completed).length;
+                        const total = list.tasks.length;
+                        return `
+                            <div class="list-item" data-list-id="${list.id}" data-action="open-list">
+                                <div class="list-icon">📝</div>
+                                <div class="list-info">
+                                    <div class="list-name">${escapeHtml(list.name)}</div>
+                                    <div class="list-meta">${total} task${total !== 1 ? 's' : ''} · ${completed} done</div>
+                                </div>
+                                <button class="btn btn-danger btn-xs delete-list-btn" data-list-id="${list.id}" data-action="delete-list" title="Delete list">🗑️</button>
+                                <span class="arrow">→</span>
+                            </div>`;
+                    }).join('');
+
+                appEl.innerHTML = `
+                    <div class="app-header">
+                        <button class="fullscreen-btn" id="fullscreen-toggle" title="Toggle full‑screen">⛶</button>
+                        <div class="logo"><span class="logo-icon">✓</span>رأس أريج</div>
+                        <p class="subtitle">Stay organized, get things done</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><span class="card-title">📂 Your Lists</span></div>
+                        <div class="input-group">
+                            <input type="text" class="input" id="new-list-input" placeholder="➕ Create a new list..." maxlength="80" autocomplete="off" />
+                            <button class="btn btn-primary" id="add-list-btn">Add List</button>
+                        </div>
+                    </div>
+                    <div id="lists-container">${listsHtml}</div>`;
+                attachListsEvents();
+            }
+
+            function attachListsEvents() {
+                const addBtn = document.getElementById('add-list-btn');
+                const input = document.getElementById('new-list-input');
+                function addList() {
+                    const name = input.value.trim();
+                    if (!name) { input.focus(); input.style.borderColor = '#ff7675'; setTimeout(() => input.style.borderColor = '', 800); return; }
+                    lists.push({ id: generateId(), name, tasks: [] });
+                    saveLists(lists);
+                    input.value = '';
+                    input.focus();
+                    render();
+                }
+                addBtn.addEventListener('click', addList);
+                input.addEventListener('keydown', e => { if (e.key === 'Enter') addList(); });
+
+                document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
+
+                document.getElementById('lists-container').addEventListener('click', function(e) {
+                    const listItem = e.target.closest('[data-list-id]');
+                    if (!listItem) return;
+                    const listId = listItem.getAttribute('data-list-id');
+                    const action = listItem.getAttribute('data-action');
+                    if (action === 'open-list') { if (!e.target.closest('[data-action="delete-list"]')) openList(listId); }
+                    else if (action === 'delete-list') { e.stopPropagation(); deleteList(listId); }
+                });
+            }
+
+            async function deleteList(listId) {
+                const list = lists.find(l => l.id === listId);
+                if (!list) return;
+                if (list.name === REQUIRED_LIST_NAME) {
+                    alert('This list cannot be deleted.');
+                    return;
+                }
+                const confirmed = await showModal({
+                    icon: '🗑️', title: 'Delete List?',
+                    message: `Are you sure you want to delete "<strong>${escapeHtml(list.name)}</strong>" and all its ${list.tasks.length} task(s)? This cannot be undone.`,
+                    confirmText: 'Delete List', cancelText: 'Keep List', confirmVariant: 'danger'
+                });
+                if (confirmed) { lists = lists.filter(l => l.id !== listId); saveLists(lists); render(); }
+            }
+
+            function openList(listId) { currentListId = listId; currentView = 'tasks'; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+            function goBackToLists() { currentView = 'lists'; currentListId = null; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+            function renderTasksView() {
+                const list = lists.find(l => l.id === currentListId);
+                if (!list) { goBackToLists(); return; }
+                const completedCount = list.tasks.filter(t => t.completed).length;
+                const totalCount = list.tasks.length;
+                const remainingCount = totalCount - completedCount;
+
+                let tasksHtml = list.tasks.length === 0 ? `
+                    <div class="empty-state">
+                        <div class="empty-icon">✨</div>
+                        <p>No tasks yet.<br>Add your first task below!</p>
+                    </div>` : list.tasks.map(task => `
+                    <div class="task-row ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
+                        <div class="checkbox-circle ${task.completed ? 'checked' : ''}" data-action="toggle-task" data-task-id="${task.id}">${task.completed ? '✓' : ''}</div>
+                        <span class="task-text">
+                            <span class="text-content">${escapeHtml(task.text)}</span>
+                        </span>
+                        <div class="task-actions">
+                            <button class="btn btn-danger btn-sm" data-action="delete-task" data-task-id="${task.id}" title="Delete task">🗑️</button>
+                        </div>
+                    </div>`).join('');
+
+                appEl.innerHTML = `
+                    <div class="app-header">
+                        <button class="fullscreen-btn" id="fullscreen-toggle" title="Toggle full‑screen">⛶</button>
+                        <div class="logo"><span class="logo-icon">✓</span>رأس أريج</div>
+                    </div>
+                    <div class="back-row" id="back-btn"><span class="back-arrow">←</span> Back to Lists</div>
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📝 ${escapeHtml(list.name)}</span>
+                            <span class="badge" id="remaining-badge">${remainingCount} left</span>
+                            <span class="badge success" id="completed-badge" style="${completedCount > 0 ? '' : 'display:none'}">${completedCount} done</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" class="input" id="new-task-input" placeholder="➕ Add a new task..." maxlength="200" autocomplete="off" />
+                            <button class="btn btn-primary" id="add-task-btn">Add</button>
+                        </div>
+                    </div>
+                    <div id="tasks-container">${tasksHtml}</div>`;
+                attachTasksEvents(list);
+            }
+
+            function attachTasksEvents(list) {
+                const addBtn = document.getElementById('add-task-btn');
+                const input = document.getElementById('new-task-input');
+                const backBtn = document.getElementById('back-btn');
+
+                document.getElementById('fullscreen-toggle').addEventListener('click', toggleFullscreen);
+
+                const updateCounts = () => {
+                    const completed = list.tasks.filter(t => t.completed).length;
+                    const total = list.tasks.length;
+                    const remaining = total - completed;
+                    document.getElementById('remaining-badge').textContent = `${remaining} left`;
+                    const completedBadge = document.getElementById('completed-badge');
+                    completedBadge.textContent = `${completed} done`;
+                    completedBadge.style.display = completed > 0 ? '' : 'none';
+                };
+
+                backBtn.addEventListener('click', goBackToLists);
+
+                function addTask() {
+                    const text = input.value.trim();
+                    if (!text) { input.focus(); input.style.borderColor = '#ff7675'; setTimeout(() => input.style.borderColor = '', 800); return; }
+                    list.tasks.push({ id: generateId(), text, completed: false });
+                    saveLists(lists);
+                    input.value = '';
+                    input.focus();
+                    render();
+                }
+
+                addBtn.addEventListener('click', addTask);
+                input.addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+                document.getElementById('tasks-container').addEventListener('click', async function(e) {
+                    const taskRow = e.target.closest('[data-task-id]');
+                    if (!taskRow) return;
+                    const taskId = taskRow.getAttribute('data-task-id');
+                    const actionEl = e.target.closest('[data-action]');
+                    if (!actionEl) return;
+                    const action = actionEl.getAttribute('data-action');
+
+                    if (action === 'toggle-task') {
+                        await toggleTask(taskId, list, updateCounts);
+                    } else if (action === 'delete-task') {
+                        await deleteTask(taskId, list, updateCounts);
+                    }
+                });
+            }
+
+            async function toggleTask(taskId, list, updateCounts) {
+                const task = list.tasks.find(t => t.id === taskId);
+                if (!task) return;
+
+                if (task.completed) {
+                    const confirmed = await showModal({
+                        icon: '🔄', title: 'Uncheck Task?',
+                        message: `Are you sure you want to mark "<strong>${escapeHtml(task.text)}</strong>" as incomplete?`,
+                        confirmText: 'Uncheck', cancelText: 'Keep Checked', confirmVariant: 'warning'
+                    });
+                    if (!confirmed) return;
+                }
+
+                const wasCompleted = task.completed;
+                task.completed = !task.completed;
+                saveLists(lists);
+
+                const taskRow = document.querySelector(`.task-row[data-task-id="${taskId}"]`);
+                if (!taskRow) return;
+
+                const checkbox = taskRow.querySelector('.checkbox-circle');
+                const textContent = taskRow.querySelector('.text-content');
+
+                if (task.completed) {
+                    taskRow.classList.add('completed');
+                    checkbox.classList.add('checked');
+                    checkbox.textContent = '✓';
+
+                    if (textContent) {
+                        textContent.style.transition = 'none';
+                        textContent.style.backgroundSize = '0% 100%';
+                        textContent.offsetHeight;
+                        textContent.style.transition = 'background-size 0.4s ease';
+                        textContent.style.backgroundSize = '100% 100%';
+                        textContent.addEventListener('transitionend', function handler() {
+                            textContent.style.transition = '';
+                            textContent.removeEventListener('transitionend', handler);
+                        });
+                    }
+                } else {
+                    taskRow.classList.remove('completed');
+                    checkbox.classList.remove('checked');
+                    checkbox.textContent = '';
+                    if (textContent) {
+                        textContent.style.transition = 'none';
+                        textContent.style.backgroundSize = '0% 100%';
+                    }
+                }
+                updateCounts();
+            }
+
+            async function deleteTask(taskId, list, updateCounts) {
+                const task = list.tasks.find(t => t.id === taskId);
+                if (!task) return;
+                const confirmed = await showModal({
+                    icon: '🗑️', title: 'Delete Task?',
+                    message: `Are you sure you want to delete "<strong>${escapeHtml(task.text)}</strong>"? This cannot be undone.`,
+                    confirmText: 'Delete', cancelText: 'Keep Task', confirmVariant: 'danger'
+                });
+                if (!confirmed) return;
+
+                list.tasks = list.tasks.filter(t => t.id !== taskId);
+                saveLists(lists);
+
+                const taskRow = document.querySelector(`.task-row[data-task-id="${taskId}"]`);
+                if (taskRow) taskRow.remove();
+                updateCounts();
+
+                if (list.tasks.length === 0) {
+                    render();
+                }
+            }
+
+            function escapeHtml(str) {
+                const div = document.createElement('div');
+                div.textContent = str;
+                return div.innerHTML;
+            }
+
+            // ── Init ──────────────────────────────────
+            render();
+            enableAutoFullscreen();   // tries to go full‑screen on first tap
+
+            console.log('✅ رأس أريج with full‑screen support ready!');
+        })();
+    </script>
+</body>
+</html>        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
